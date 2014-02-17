@@ -83,7 +83,11 @@ class @AutoComplete
     , 500
 
   onItemClick: (doc, e) =>
-    @replace doc[@rules[@matched].field]
+    # TODO Turn this into a callback
+    @$element.val('')
+    Router.go "people",
+      name: doc[@rules[@matched].field]
+    # @replace doc[@rules[@matched].field]
     @hideList()
 
   onItemHover: (doc, e) ->
@@ -96,6 +100,9 @@ class @AutoComplete
 
     rule = @rules[@matched]
     @replace rule.collection.findOne(docId)[rule.field]
+    @$element.val('')
+    Router.go "people",
+      name: rule.collection.findOne(docId)[rule.field]
     @hideList()
     return true
 
@@ -162,10 +169,11 @@ class @AutoComplete
 
     rule = @rules[@matched]
 
-    args = {}
+    args = {dataset: "OGC"}  # Hard coded ... don't do this
     args[rule.field] =
       $regex: @filter # MIND BLOWN!
       $options: "i"
+
 
     return rule.collection.find(args, {limit: @limit})
 
@@ -175,7 +183,7 @@ class @AutoComplete
 
   getMenuPositioning: ->
     position = @$element.position()
-    offset = @$element.getCaretPosition(@position)
+    offset = 0  # @$element.getCaretPosition(@position)
 
     if @position is "top"
       # Do some additional calculation to position menu from bottom
